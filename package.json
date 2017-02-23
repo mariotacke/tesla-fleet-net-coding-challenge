@@ -1,0 +1,26 @@
+{
+  "name": "tesla-fleet-net-coding-challenge",
+  "version": "1.0.0",
+  "description": "Tesla Fleet Net Coding Challenge",
+  "main": "index.js",
+  "repository": "git@github.com:mariotacke/tesla-fleet-net-coding-challenge.git",
+  "author": "Mario Tacke <tacke.mario@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "cross-env DEBUG=tesla:* nodemon",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "cross-env": "^3.1.4",
+    "eslint": "^3.16.1",
+    "nodemon": "^1.11.0"
+  },
+  "dependencies": {
+    "config": "^1.25.1",
+    "debug": "^2.6.1",
+    "koa": "^1.2.5",
+    "koa-bodyparser": "^2.3.0",
+    "koa-router": "^5.4.0",
+    "koa-validate": "^1.0.7"
+  }
+}

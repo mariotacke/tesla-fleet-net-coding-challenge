@@ -1,0 +1,14 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    "indent": ["error", 2],
+    "no-unused-vars": 1,
+    "quotes": ["error", "single"],
+    "require-yield": 1,
+    "semi": ["error", "always"]
+  }
+}
