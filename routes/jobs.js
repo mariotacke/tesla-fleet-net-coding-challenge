@@ -23,6 +23,29 @@ router.get('/:job_name', function* () {
   this.body = job;
 });
 
+// this route is somewhat unnecessary since a regular GET returns all of the
+// information including status history. This is an additional route to cover
+// the specifications.
+router.get('/:job_name/history', function* () {
+  this.checkParams('job_name').notEmpty('cannot_be_blank');
+
+  this.validate();
+
+  const { params } = this;
+  const jobName = params.job_name;
+
+  const job = yield db.getJob(jobName);
+
+  if (!job) {
+    throw new Conflict(`Job '${jobName}' not found.`);
+  }
+
+  this.body = {
+    name: job.name,
+    statusHistory: job.statusHistory
+  };
+});
+
 router.post('/', function* () {
   this.checkBody('rollout_name').notEmpty('cannot_be_blank');
   this.checkBody('vehicle_name').notEmpty('cannot_be_blank');
