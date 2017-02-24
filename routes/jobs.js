@@ -6,6 +6,23 @@ const router = require('koa-router')({
   prefix: '/jobs'
 });
 
+router.get('/:job_name', function* () {
+  this.checkParams('job_name').notEmpty('cannot_be_blank');
+
+  this.validate();
+
+  const { params } = this;
+  const jobName = params.job_name;
+
+  const job = yield db.getJob(jobName);
+
+  if (!job) {
+    throw new Conflict(`Job '${jobName}' not found.`);
+  }
+
+  this.body = job;
+});
+
 router.post('/', function* () {
   this.checkBody('rollout_name').notEmpty('cannot_be_blank');
   this.checkBody('vehicle_name').notEmpty('cannot_be_blank');
