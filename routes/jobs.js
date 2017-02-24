@@ -26,7 +26,7 @@ router.post('/', function* () {
     throw new Conflict(`Rollout '${rolloutName}' not found.`);
   }
 
-  const jobExists = yield db.getJob(rolloutName, jobName);
+  const jobExists = yield db.getJob(jobName);
 
   if (jobExists) {
     throw new Conflict(`Job '${jobName}' already exists in Rollout '${rolloutName}'`);
@@ -37,6 +37,59 @@ router.post('/', function* () {
   yield db.addJob(rolloutName, job);
 
   this.status = 201;
+  this.body = job;
+});
+
+router.put('/:job_name', function* () {
+  const allowedStatuses = ['downloading', 'installing', 'succeeded', 'failed'];
+
+  this.checkQuery('status').in(allowedStatuses, 'invalid_status');
+  this.checkParams('job_name').notEmpty('cannot_be_blank');
+
+  this.validate();
+
+  const { params, query } = this;
+  const status = query.status;
+  const jobName = params.job_name;
+
+  const job = yield db.getJob(jobName);
+
+  if (!job) {
+    throw new Conflict(`Job '${jobName}' not found.`);
+  }
+
+  job.changeStatus(status);
+
+  yield db.save();
+
+  this.body = job;
+});
+
+router.delete('/:job_name', function* () {
+  this.checkParams('job_name').notEmpty('cannot_be_blank');
+
+  this.validate();
+
+  const { params } = this;
+  const jobName = params.job_name;
+
+  const job = yield db.getJob(jobName);
+
+  if (!job) {
+    throw new Conflict(`Job '${jobName}' not found.`);
+  }
+
+  const cancelableStatuses = ['created', 'downloading'];
+  const status = job.getStatus().type;
+
+  if (!cancelableStatuses.includes(status)) {
+    throw new Conflict(`Cannot cancel '${jobName}'.`);
+  }
+
+  job.changeStatus('canceled');
+
+  yield db.save();
+
   this.body = job;
 });
 
